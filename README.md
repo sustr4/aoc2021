@@ -16,3 +16,7 @@ _Day 8_
 
 This was the longest stretch between 1st and 2nd star.
 
+_Day 9_
+
+*Not* a fully generic solution today: the maximum size of a single basin is hard-coded.
+
