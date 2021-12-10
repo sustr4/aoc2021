@@ -20,3 +20,6 @@ _Day 9_
 
 *Not* a fully generic solution today: the maximum size of a single basin is hard-coded.
 
+_Day 10_
+
+Again, there is a hard-coded number of iterations. But a few visual checks have been added to indicate wheter additional columns are requried.
