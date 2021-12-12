@@ -20,7 +20,11 @@ _Day 9_
 
 *Not* a fully generic solution today: the maximum size of a single basin is hard-coded.
 
-_Day 10_
+_Day 11_
 
 Got about half way with spreadsheet, then lost the will.
+
+_Day 12_
+
+Yes, I know, this should have ben an excercise in recursion. I turned into an excercise in RegEx instead.
 
