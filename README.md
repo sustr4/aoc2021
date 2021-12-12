@@ -20,3 +20,7 @@ _Day 9_
 
 *Not* a fully generic solution today: the maximum size of a single basin is hard-coded.
 
+_Day 10_
+
+Got about half way with spreadsheet, then lost the will.
+
