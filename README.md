@@ -32,3 +32,7 @@ _Day 12_
 
 Yes, I know, this should have ben an excercise in recursion. I turned into an excercise in RegEx instead.
 
+_Day 13_
+
+After a few improvements I ended up with self-generating code 😀
+
