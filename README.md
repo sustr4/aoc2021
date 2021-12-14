@@ -36,3 +36,7 @@ _Day 13_
 
 After a few improvements I ended up with self-generating code 😀
 
+_Day 14_
+
+The second star was the worst by far. I hope this *was* my low point.
+
