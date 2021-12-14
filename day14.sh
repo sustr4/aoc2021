@@ -1,27 +1,48 @@
 #!/bin/bash
 
 declare -A RULE
+declare -A COMBOS
+declare -A NEWCOMBOS
 
-cat day14-input.txt | grep -- '->' > day14-rules
+# Separate rules from input
+cat day14-input.txt | grep -- '->' | awk '{print $1 " " $3}' > day14-rules
 
-while read -r PAIR ARR INS; do RULE["${PAIR}"]="${INS}"; done < day14-rules
+# Separate string from input
 
-head -n 1 day14-input.txt | sed 's/\(.\)/\1\n/g' | grep -Ev '^$' > day14-poly
-
-for i in {1..10}; do
-	PREV=""
-	while read CHAR; do
-		if [ "$PREV" != "" ]; then
-			printf "$PREV\n${RULE["${PREV}${CHAR}"]}\n"
-		fi
-		PREV="$CHAR"
-	done < day14-poly > day14-poly.new
-	echo $PREV >> day14-poly.new
-
-	mv day14-poly.new day14-poly
-	wc -l day14-poly
+# Generate combinations
+UNIQS=`grep -Eo '[A-Z]' day14-input.txt | sort | uniq`
+for i in $UNIQS; do
+	for j in $UNIQS; do
+		COMBOS["${i}${j}"]=0
+	done
+done
+START="1`head -n 1 day14-input.txt`2"
+LEN=$((${#START}-2))
+for i in `seq 0 $LEN`; do
+	COMBOS["${START:$i:2}"]=1
 done
 
-sort -o day14-poly day14-poly
-cat day14-poly | uniq -c | sort -n
+
+
+for i in ${!COMBOS[@]}; do NEWCOMBOS["$i"]=0; done
+
+for i in {1..10}; do
+	while read -r PAIR INS; do
+		if [ "$PAIR" == "" ]; then continue; fi
+		NEW1="${PAIR:0:1}${INS}"
+		NEW2="${INS}${PAIR:1:1}"
+		if [ ${COMBOS["$PAIR"]} -gt 0 ]; then
+			COMBOS["$NEW1"]=$((${COMBOS["$NEW1"]}+${COMBOS["$PAIR"]}))
+			COMBOS["$NEW2"]=$((${COMBOS["$NEW2"]}+${COMBOS["$PAIR"]}))
+			COMBOS["$PAIR"]=0
+		fi
+	done < day14-rules
+done
+
+for i in ${!COMBOS[@]}; do
+  printf "${i:0:1}\t${COMBOS[$i]}\n"
+  printf "${i:1:1}\t${COMBOS[$i]}\n"
+done > day14-counts
+
+datamash -s groupby 1 sum 2 < day14-counts
 
