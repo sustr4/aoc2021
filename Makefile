@@ -7,5 +7,5 @@ day14: day14.c
 	cc day14.c -o day14
 
 day15: day15.c
-	cc day15.c -o day15
+	cc day15.c -ggdb -o day15
 

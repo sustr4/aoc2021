@@ -1,4 +1,18 @@
 #include <stdio.h>
+#include <limits.h>
+
+/*
+char map[10][10]={
+{1,1,6,3,7,5,1,7,4,2},
+{1,3,8,1,3,7,3,6,7,2},
+{2,1,3,6,5,1,1,3,2,8},
+{3,6,9,4,9,3,1,5,6,9},
+{7,4,6,3,4,1,7,1,1,1},
+{1,3,1,9,1,2,8,1,3,7},
+{1,3,5,9,9,1,2,4,2,1},
+{3,1,2,5,4,2,1,6,3,9},
+{1,2,9,3,1,3,8,5,2,1},
+{2,3,1,1,9,4,4,5,8,1}}; */
 
 char map[100][100]={
 	{8,2,7,8,5,7,2,1,1,4,7,9,3,7,5,6,1,9,1,8,3,3,5,6,1,1,2,7,4,5,2,8,5,3,4,2,6,9,2,9,6,1,5,8,9,9,1,1,6,9,5,8,9,6,9,4,8,1,4,2,7,5,9,3,9,4,4,1,9,1,3,8,9,1,2,1,4,1,1,1,9,2,1,2,7,8,9,9,5,1,2,2,1,1,6,3,9,5,5,5},
@@ -103,37 +117,55 @@ char map[100][100]={
 	{2,4,2,9,1,9,6,1,1,7,6,6,8,7,3,1,2,3,9,9,8,3,1,2,9,2,6,1,4,2,1,9,1,3,3,9,4,8,1,1,2,6,2,3,3,8,2,2,2,1,7,7,4,2,5,2,2,5,5,8,7,6,1,2,7,1,6,8,2,8,9,5,2,1,9,3,5,1,1,2,5,5,1,5,6,7,9,2,9,6,8,1,3,3,9,2,4,5,1,1}};
 
 char path[100][100];
-int minimum=834;
+int cost[100][100];
+int minimum=100;
 
-int step(int x, int y, int score) {
+int step(int x, int y, int score, int depth) {
 	path[x][y]=1;
+
 	
-	if(x==99 && y==99) {
-		if (minimum>score) {
-			minimum=score;
-			printf("Score: %d\n", score+map[x][y]);
+//	printf("Testing cost [%d][%d] = %d\n",x,y,cost[x][y]);	
+	if(cost[x][y]) {
+		if (minimum>score+cost[x][y]) {
+			minimum=score+cost[x][y];
+//			printf("%d=%d+%d\n",minimum,score,cost[x][y]);
+//			printf("Score: %d\n", score+map[x][y]);
 		}
 	}
-	else if(score<minimum){
-
+	else if(depth<9){
 		//Right
-		if (x<99 && !path[x+1][y]) step(x+1, y, score+map[x][y]);
+		if (x<99 && !path[x+1][y]) step(x+1, y, score+map[x][y], depth+1);
 		//Down
-		if (y<99 && !path[x][y+1]) step(x, y+1, score+map[x][y]);
+		if (y<99 && !path[x][y+1]) step(x, y+1, score+map[x][y], depth+1);
 		//Up
-		if (y && !path[x][y-1]) step(x, y-1, score+map[x][y]);
+		if (y && !path[x][y-1]) step(x, y-1, score+map[x][y], depth+1);
 		//Left
-		if (x && !path[x-1][y]) step(x-1, y, score+map[x][y]);
+		if (x && !path[x-1][y]) step(x-1, y, score+map[x][y], depth+1);
 	}
 	path[x][y]=0;
 }
 
 int main() {
-	int i,j;
+	int i,j,x,y,jmax;
 
-	for(i=0; i<100; i++) for(j=0; j<100; j++) path[i][j]=0;
+	for(i=0; i<100; i++) for(j=0; j<100; j++) { path[i][j]=0; cost[i][j]=0; }
 
-	step(0,0,-map[0][0]);
+	cost[99][99]=map[99][99];
 
+	x=98;y=99;
+	for(i=197; i>=0; i--) {
+		while (x<100 && y>=0) {
+			printf("[%d,%d] (%d) ",x,y,map[x][y]);
+			minimum=INT_MAX;
+			step(x,y,0,0);
+			cost[x][y]=minimum;
+			printf("%d\n", minimum);
+			x++; y--;
+		}
+		if(i>99) { x=i-100; y=99; }
+		else { x=0; y=i-1; }
+	}
+
+	printf("Cost: %d",cost[0][0]-map[0][0]);
 	return 0;
 }
