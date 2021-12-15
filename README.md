@@ -40,3 +40,8 @@ _Day 14_
 
 The second star was the worst by far. I hope this *was* my low point.
 
+_Day 15_
+
+Spent some time in denial phase, in the end it worked out nicely.
+
+
