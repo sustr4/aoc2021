@@ -10,5 +10,5 @@ day15: day15.c
 	cc day15.c -ggdb -o day15
 
 day16: day16.c
-	cc day16.c -ggdb -o day16
+	cc day16.c -ggdb -lm -o day16
 
