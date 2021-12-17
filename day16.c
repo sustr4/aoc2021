@@ -9,7 +9,7 @@
 int inputlength;
 int versiontotal=0;
 
-long powi(int base, int power) {
+long powi(long base, long power) {
 	long i,retVal=1;
 
 	for(i=0; i<power; i++) {
@@ -58,7 +58,7 @@ long bin2int(char *input, int length) {
 	int i;
 	long retVal = 0;
 
-	for(i=0; i<length; i++) retVal=retVal+(input[length-1-i])*powi(2,i);
+	for(i=0; i<length; i++) retVal=retVal+((long)input[length-1-i])*powi(2,(long)i);
 
 	return retVal;
 }
@@ -88,6 +88,23 @@ int parsePacket(char* input,int length){
 		lentype=input[6]; processedlen++;
 		fprintf(stderr,"LenType: %d\n",lentype);
 
+		switch(dtype) {
+			case 0:
+				printf("(+ "); break;
+			case 1:
+				printf("(* "); break;
+			case 2:
+				printf("(min "); break;
+			case 3:
+				printf("(max "); break;
+			case 5:
+				printf("(> "); break;
+			case 6:
+				printf("(< "); break;
+			case 7:
+				printf("(= "); break;
+		}
+
 		if(lentype) {
 			insidelen=bin2int(input+7,11);
 			fprintf(stderr,"Content length: %d PACKETS ",insidelen); printBin(input+7,11);
@@ -115,8 +132,8 @@ int parsePacket(char* input,int length){
 				fprintf(stderr,"\nStepping out at position %d\n", processedlen, insidelen);
 				if(insidelen<=6) break;
 			}
-			
 		}
+		printf(") ");	
 	} else {
 		i=0;
 		j=0;
@@ -130,7 +147,7 @@ int parsePacket(char* input,int length){
 		}
 		processedlen+=i+5;
 		fprintf(stderr,"Literal: %d \n", bin2int(literal,j)); printBin(literal,j);
-		printf("%d ", bin2int(literal,j));
+		printf("%ld ", bin2int(literal,j));
 		free(literal);
 	}
 
