@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DEBUG=1
+
 if [ ! -f day18-form ]; then
 	echo '[' > day18-form
 	head -n 1 day18-input.txt >> day18-form
@@ -13,12 +15,14 @@ if [ ! -f day18-form ]; then
 #echo '[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]' > day18-form
 #echo '[[[[6,6],[[0,9],[6,2]]],[[[9,4],[5,8]],6]],[[[4,9],6],[[[0,1],[8,5]],[3,[7,6]]]]]' > day18-form
 #echo '[[[[0,[6,6]],[0,6]],[[[7,11],[5,8]],6]],[[[4,9],6],[[[0,1],[8,5]],[3,[7,6]]]]]' > day18-form
+#echo '[[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]' > day18-form
 
 fi
 
 
 tokenize () {
 	if [ "$1" == "" ]; then FILE="day18-form"; else FILE="$1"; fi
+	unwrap $FILE
 	sed -i 's/\s\s*/\n/g' $FILE
 	sed -i 's/,/\n,\n/g' $FILE
 }
@@ -101,7 +105,8 @@ makeMagnitudes () {
 	if [ "$1" == "" ]; then FILE="day18-form"; else FILE="$1"; fi
 	unwrap $FILE
 	cat $FILE | awk -F'[ ,]' 'BEGIN {depth=0;count=0;} {
-		if($1=="["&&$NF=="]") print 3*$2 + 2*$4
+		if($1=="["&&$NF=="]") { print 3*$2 + 2*$3; }
+#			print "print 3*" $2 " + 2*" $3 | "cat 1>&2"; }
 		else print $0;
 	}' > $FILE.tmp
 	mv $FILE.tmp $FILE
@@ -127,23 +132,53 @@ split () {
 	wrap
 	removeSpaces
 
+
+
 	while [ true ]; do
 		cp day18-form before
 
-		explode
-		moveOperands
-		makeSums	
-		addZeroes
+		while [ true ]; do
+			cp day18-form before-explode
+			explode
+			moveOperands
+			makeSums	
+			addZeroes
+			removeSpaces
+			printf "Explode -> "; cat day18-form | sed 's/\s//g'
+			diff -u before-explode day18-form >/dev/null
+			if [ $? -eq 0 ]; then break; fi
+		done
+
 		split
 
 		wrap 
 		removeSpaces 
-
-		cat day18-form
+		if [ $DEBUG -eq 1 ]; then
+			printf "Split   -> "; cat day18-form
+		fi
 		diff -u before day18-form >/dev/null
 		if [ $? -eq 0 ]; then break; fi
 #		break
 	done
+
+	cp day18-form day18-mag
+	wrap day18-mag
+	removeSpaces day18-mag
+
+	while [ true ]; do
+		cp day18-mag before
+
+		makeMagnitudes day18-mag
+
+		wrap day18-mag
+		removeSpaces day18-mag
+#		cat day18-mag
+
+		diff -u before day18-mag >/dev/null
+		if [ $? -eq 0 ]; then break; fi
+	done
+
+	cat day18-mag >> day18-mag-all
 
 #wrap day18-form
 
