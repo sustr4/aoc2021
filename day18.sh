@@ -8,15 +8,6 @@ if [ ! -f day18-form ]; then
 	echo ',' >> day18-form
 	head -n 2 day18-input.txt | tail -n 1 >> day18-form
 	echo ']' >> day18-form
-
-#echo '[[[[[9,8],1],2],3],4]' > day18-form
-#echo '[7,[6,[5,[4,[3,2]]]]]' > day18-form
-#echo '[[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]' > day18-form
-#echo '[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]' > day18-form
-#echo '[[[[6,6],[[0,9],[6,2]]],[[[9,4],[5,8]],6]],[[[4,9],6],[[[0,1],[8,5]],[3,[7,6]]]]]' > day18-form
-#echo '[[[[0,[6,6]],[0,6]],[[[7,11],[5,8]],6]],[[[4,9],6],[[[0,1],[8,5]],[3,[7,6]]]]]' > day18-form
-#echo '[[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]' > day18-form
-
 fi
 
 
@@ -51,12 +42,10 @@ explode () {
 	cat $FILE | awk -F'[ ,]' 'BEGIN {depth=0;count=0;} {
 		if ($1=="[") depth+=1;
 		if((count==0)&&(depth>4)&&($1=="[")&&($NF=="]")) {
-#			print depth "," count ": " $0 | "cat 1>&2"
 			$1="+"; $NF="+"; print $0; count+=1;
 		}
 		else {
 			print $0;
-#			print depth "," count ": " $0 | "cat 1>&2"
 		}
 
 		if ($NF=="]") depth-=1;
@@ -106,7 +95,6 @@ makeMagnitudes () {
 	unwrap $FILE
 	cat $FILE | awk -F'[ ,]' 'BEGIN {depth=0;count=0;} {
 		if($1=="["&&$NF=="]") { print 3*$2 + 2*$3; }
-#			print "print 3*" $2 " + 2*" $3 | "cat 1>&2"; }
 		else print $0;
 	}' > $FILE.tmp
 	mv $FILE.tmp $FILE
@@ -153,12 +141,9 @@ split () {
 
 		wrap 
 		removeSpaces 
-		if [ $DEBUG -eq 1 ]; then
-			printf "Split   -> "; cat day18-form
-		fi
+		printf "Split   -> "; cat day18-form
 		diff -u before day18-form >/dev/null
 		if [ $? -eq 0 ]; then break; fi
-#		break
 	done
 
 	cp day18-form day18-mag
@@ -172,7 +157,6 @@ split () {
 
 		wrap day18-mag
 		removeSpaces day18-mag
-#		cat day18-mag
 
 		diff -u before day18-mag >/dev/null
 		if [ $? -eq 0 ]; then break; fi
@@ -180,9 +164,5 @@ split () {
 
 	cat day18-mag >> day18-mag-all
 
-#wrap day18-form
-
-#removeSpaces day18-form
-#cat day18-form
 
 
