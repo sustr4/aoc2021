@@ -13,6 +13,7 @@ int main() {
 		extend=+1;
 		srcsize=tgtsize;
 		tgtsize+=+2*extend;
+		if(repetition>1) free(src); //cannot free the original const
 		src=tgt;
 		tgt=calloc(tgtsize*tgtsize,sizeof(char));
 		if(filter[0]&&(!(repetition%2))) memset(tgt,1,tgtsize*tgtsize*sizeof(char));
