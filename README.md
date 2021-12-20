@@ -44,4 +44,15 @@ _Day 15_
 
 Spent some time in denial phase, in the end it worked out nicely.
 
+_Day 18_
+
+Snail arithmetics was hard, my unorthodox solution was slow but I found the answer waiting for me in the terminal next morning.
+
+_Day 19_
+
+Not giving up, all essential fonctions are there, just need to find the few flaws.
+
+_Day 20_
+
+Back to manageable complexity. Hooray!
 
