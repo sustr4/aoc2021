@@ -1,4 +1,4 @@
-all: day11 day14 day15 day16 day17
+all: day11 day14 day15 day16 day17 day19 day20
 
 day11: day11.c
 	cc day11.c -o day11
@@ -14,3 +14,12 @@ day16: day16.c
 
 day17: day17.c
 	cc day17.c -o3 -o day17
+
+day19-gen: day19-gen.c
+	cc day19-gen.c -ggdb -lm -o3 -o day19-gen
+
+day19: day19-gen
+
+day20: day20.c
+	cc day20.c -ggdb -o day20
+
