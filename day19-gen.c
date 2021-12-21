@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -493,6 +494,19 @@ int Altmain () {
 	return 0;
 }
 
+int dumpBeacons(char *filename, int scanner, TPoint *vector) {
+	int i;
+	FILE *f = fopen(filename, "w");
+
+	fprintf(f, "--- scanner %d ---\n", scanner);
+
+	for(i=0;(vector[i].x)&&(vector[i].y)&&(vector[i].z);i++) {
+		fprintf(f,"%d,%d,%d\n",vector[i].x,vector[i].y,vector[i].z);
+	}
+	fclose(f);
+}
+
+
 int main (int argc, char *argv[]) {
 	TPoint ** points;
 	int count,k,j,i,rot;
@@ -501,6 +515,7 @@ int main (int argc, char *argv[]) {
 	TPoint shift;
 	TPoint test;
 	int matches;
+	char *filename;
 
 	int Count1, Count2;	
 
@@ -550,8 +565,12 @@ int main (int argc, char *argv[]) {
 				}
 			}
 
-			if(matches>11) 
+			if(matches>11) {
 				fprintf(stdout,"%d matches after %d tests at Rotation %d, shift [%d, %d, %d] (scanners %d and %d)\n", matches, count, rot, shift.x, shift.y, shift.z, Scn1, Scn2);
+				asprintf(&filename,"scanner%02d.r%02d.x%d.y%d.z%d.txt",Scn2,rot,shift.x,shift.y,shift.z);
+				dumpBeacons(filename,Scn2,TRsecond);
+				free(filename);
+			}
 		}
 
 		
