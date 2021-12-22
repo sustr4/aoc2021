@@ -6,11 +6,13 @@
 #include <limits.h>
 
 #define SCANNERS 36
-#define MAXBEACONS 28
+#define MAXBEACONS 30
 
 #define EXPECTED 168668016
 
 long comparisonsMade=0;
+
+int reverseTrans[24];
 
 const int trans[24][3][3] = {
 {{ 1, 0, 0}, { 0, 1, 0}, { 0, 0, 1 }},
@@ -152,9 +154,9 @@ TPoint **readInput() {
 		}
 	}
 
-	for(j=0; point[j]; j++)
+/*	for(j=0; point[j]; j++)
 		for(i=0; point[j][i].x || point[j][i].y || point[j][i].z ; i++)
-			fprintf(stderr,"Scn %2d, point #%02d: [%d, %d, %d]\n", j, i, point[j][i].x, point[j][i].y, point[j][i].z);
+			fprintf(stderr,"Scn %2d, point #%02d: [%d, %d, %d]\n", j, i, point[j][i].x, point[j][i].y, point[j][i].z);/**/
 
 
 	fclose(input);
@@ -500,16 +502,33 @@ int dumpBeacons(char *filename, int scanner, TPoint *vector) {
 
 	fprintf(f, "--- scanner %d ---\n", scanner);
 
-	for(i=0;(vector[i].x)&&(vector[i].y)&&(vector[i].z);i++) {
+	for(i=0;(vector[i].x)||(vector[i].y)||(vector[i].z);i++) {
 		fprintf(f,"%d,%d,%d\n",vector[i].x,vector[i].y,vector[i].z);
 	}
 	fclose(f);
 }
 
+void findReverseTrans() {
+	int i,rot;
+	TPoint sample={100,200,300};
+	TPoint test, test2;
+
+	for(rot=0; rot<24; rot++) {
+		test=transPoint(rot,sample);
+		for(i=23;i>0;i--) {
+			test2=transPoint(i,test);
+			if((sample.x==test2.x)&&(sample.y==test2.y)&&(sample.z==test2.z))
+				reverseTrans[rot]=i;
+		}
+	}
+
+//	for(i=0; i<24; i++) fprintf(stderr,"%d<->%d ",i,reverseTrans[i]);
+//	fprintf(stderr,"\n");
+}
 
 int main (int argc, char *argv[]) {
 	TPoint ** points;
-	int count,k,j,i,rot;
+	int count,l,k,j,i,rot;
 	int Scn1, Scn2;
 	TPoint *first, *second, *TRsecond;
 	TPoint shift;
@@ -517,12 +536,19 @@ int main (int argc, char *argv[]) {
 	int matches;
 	char *filename;
 
+	findReverseTrans();
+
 	int Count1, Count2;	
 
 	if(argc>2) {
 		Scn1=atoi(argv[1]);
 		Scn2=atoi(argv[2]);
-		fprintf(stderr,"Using scanners %d and %d", Scn1, Scn2);
+		if(Scn1!=Scn2) {
+			fprintf(stderr,"Using scanners %d and %d\n", Scn1, Scn2);
+		} else {
+			fprintf(stderr,"NOT using scanners %d on itself\n", Scn2);
+			exit(1);
+		}
 	} else {
 		fprintf(stderr,"Two scanners as arguments!\n");
 		exit(1);
@@ -535,48 +561,65 @@ int main (int argc, char *argv[]) {
 	fprintf(stderr,"Comparing rotations\n");
 
 
+
 	first=points[Scn1];
+
+	for(i=0;(first[i].x)||(first[i].y)||(first[i].z);i++);
+	fprintf(stderr,"%d beacons for scanner %d.\n", i, Scn1);
+
 	for(rot=0; rot<24; rot++) {
 		second=calloc(MAXBEACONS+1, sizeof(TPoint));
 		TRsecond=calloc(MAXBEACONS+1, sizeof(TPoint));
-		for(i=0;(points[Scn2][i].x)&&(points[Scn2][i].y)&&(points[Scn2][i].z);i++) {
-			second[i]=transPoint(rot,points[Scn2][i]);
+		for(i=0;(points[Scn2][i].x)||(points[Scn2][i].y)||(points[Scn2][i].z);i++) {
+			second[i]=transPoint(reverseTrans[rot],points[Scn2][i]);
 		}
 
-		// Try fitting each point in second set on the first point in the first set
-		for(i=0;(second[i].x)&&(second[i].y)&&(second[i].z);i++) {
-			shift.x=second[i].x-first[0].x;
-			shift.y=second[i].y-first[0].y;
-			shift.z=second[i].z-first[0].z;
 
-			for(k=0;(second[k].x)&&(second[k].y)&&(second[k].z);k++) {
-				TRsecond[k].x=second[k].x-shift.x;
-				TRsecond[k].y=second[k].y-shift.y;
-				TRsecond[k].z=second[k].z-shift.z;
+		// Try fitting each point in second set on each point in the first set
+		for(i=0;(second[i].x)||(second[i].y)||(second[i].z);i++) {
+			for(l=0;(first[l].x)||(first[l].y)||(first[l].z);l++) {
+				shift.x=second[i].x-first[l].x;
+				shift.y=second[i].y-first[l].y;
+				shift.z=second[i].z-first[l].z;
 
-			}
+				if((abs(shift.x)==1188)&&(abs(shift.y)==107)&&(abs(shift.z)==96)) {
+					fprintf(stderr,"This should be it\n");
+				}
 
-			count=0;
-			matches=0;
-			for(j=0;(first[j].x)&&(first[j].y)&&(first[j].z);j++) {
-				for(k=0;(TRsecond[k].x)&&(TRsecond[k].y)&&(TRsecond[k].z);k++) {
-					if(!compPoint(&(first[j]),&(TRsecond[k]))) matches++;
-					count++;
+				for(k=0;(second[k].x)||(second[k].y)||(second[k].z);k++) {
+					TRsecond[k].x=second[k].x-shift.x;
+					TRsecond[k].y=second[k].y-shift.y;
+					TRsecond[k].z=second[k].z-shift.z;
+
+				}
+
+				count=0;
+				matches=0;
+				for(j=0;(first[j].x)||(first[j].y)||(first[j].z);j++) {
+					for(k=0;(TRsecond[k].x)||(TRsecond[k].y)||(TRsecond[k].z);k++) {
+						if(!compPoint(&(first[j]),&(TRsecond[k]))) matches++;
+						count++;
+					}
+				}
+
+				if(matches>11) {
+					fprintf(stderr,"%d matches after %d tests at Rotation %d, shift [%d, %d, %d] (scanners %d and %d)\n", matches, count, rot, shift.x, shift.y, shift.z, Scn1, Scn2);
+					asprintf(&filename,"scanner%d.r%02d.x%d.y%d.z%d.txt",Scn2,reverseTrans[rot],shift.x,shift.y,shift.z);
+					dumpBeacons(filename,Scn2,TRsecond);
+					printf("%d\n",Scn2); // This is important!
+					free(filename);
+					goto loopExit;
 				}
 			}
-
-			if(matches>11) {
-				fprintf(stdout,"%d matches after %d tests at Rotation %d, shift [%d, %d, %d] (scanners %d and %d)\n", matches, count, rot, shift.x, shift.y, shift.z, Scn1, Scn2);
-				asprintf(&filename,"scanner%02d.r%02d.x%d.y%d.z%d.txt",Scn2,rot,shift.x,shift.y,shift.z);
-				dumpBeacons(filename,Scn2,TRsecond);
-				free(filename);
-			}
 		}
+		loopExit:
+//		fprintf(stderr,"%d beacons shifted for scanner %d, rotation %d.\n", i, Scn2, rot);
 
 		
 
 
 
 		free(second);
+		free(TRsecond);
 	}
 }
