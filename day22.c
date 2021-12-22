@@ -17,7 +17,7 @@ int main () {
 	ssize_t shift;
 	int i;
 	int x,y,z,xsize,ysize;
-	char **slice;
+	char *stick;
 	long totalCount=0;
 
 
@@ -68,42 +68,42 @@ int main () {
         free(line);
 
 	for(z=max[4]; z<=max[5]; z++) {
-		fprintf(stderr,"Counting slice %d\n",z);
+		fprintf(stderr,"Counting sticks in stick %d\n",z);
+		for(y=max[2]; y<=max[3]; y++) {
 
-		// Allocate slice
-		slice=calloc((xsize+2),sizeof(char*));
-		for(x=0; x<xsize; x++) slice[x]=calloc(ysize+2,sizeof(char));
+			// Allocate stick
+			stick=calloc(xsize+2,sizeof(char));
 
-		//Apply rules
-		for(i=0; i<rulecount; i++) {
-			if((z>=bounds[i][4])&&(z<=bounds[i][5])) // Does this rule even apply at z?
-				for(x=bounds[i][0]; x<=bounds[i][1]; x++)
-					for(y=bounds[i][2]; y<=bounds[i][3]; y++)
-						slice[x-max[0]][y-max[2]]=status[i];
+			//Apply rules
+			for(i=0; i<rulecount; i++) {
+				if((z>=bounds[i][4])&&
+					(z<=bounds[i][5])&&
+					(y>=bounds[i][2])&& 
+					(y<=bounds[i][3])) // Does this rule even apply
+					
+					for(x=bounds[i][0]; x<=bounds[i][1]; x++)
+						stick[x-max[0]]=status[i];
 
-	
-/*			if(z==10){	
-			for(y=0;y<=ysize;y++) {
-				for(x=0;x<xsize;x++) {
-					printf("%s",slice[x][y]?"X":".");
+		
+				if((z==10)&&(y==10)){	
+/*					for(x=0;x<xsize;x++) {
+						printf("%s",stick[x]?"X":".");
+					}
+					printf("\n");/**/
 				}
-				printf("\n");
-			}}
-				printf("\n");/**/
+			}
+
+			//Count lights
+			int stickCount=0;
+			for(x=0;x<xsize;x++)
+				if(stick[x]) stickCount++;
+
+	//		printf("%d on in this stick\n", stickCount);
+			totalCount+=(long)stickCount;
+
+			//free stick
+			free(stick);
 		}
-
-		//Count lights
-		int sliceCount=0;
-		for(x=0;x<xsize;x++)
-			for(y=0;y<=ysize;y++)
-				if(slice[x][y]) sliceCount++;
-
-//		printf("%d on in this slice\n", sliceCount);
-		totalCount+=(long)sliceCount;
-
-		//free slice
-		for(x=0; x<xsize; x++) free(slice[x]);
-		free(slice);
 	}	
 
 	printf("Total Count %ld\n",totalCount);
