@@ -5,7 +5,7 @@ void readInput() {
 
 }
 
-int main () {
+int main (int argc, char *argv[]) {
 	FILE * input;
 	int bounds[450][6];
 	size_t len = 0;
@@ -19,7 +19,12 @@ int main () {
 	int x,y,z,xsize,ysize;
 	char *stick;
 	long totalCount=0;
+	int ConcreteSlice=0;
 
+	if (argc>1) {
+		ConcreteSlice=atoi(argv[1]);
+		fprintf(stderr,"Computing only slice %d ",ConcreteSlice);
+	}
 
 	input = fopen("day22-input", "r");
 	if (input == NULL) exit(EXIT_FAILURE);
@@ -57,6 +62,8 @@ int main () {
 		rulecount++;
 
 	}
+
+	if (ConcreteSlice) fprintf(stderr,"from between %d and %d.\n", max[4], max[5]);
 	fprintf(stderr,"Extremes: [%d,%d],[%d,%d],[%d,%d]\n",
 		max[0], max[1], max[2], max[3], max[4], max[5]);
 
@@ -67,8 +74,8 @@ int main () {
 	if (line)
         free(line);
 
-	for(z=max[4]; z<=max[5]; z++) {
-		fprintf(stderr,"Counting sticks in stick %d\n",z);
+	for(z=ConcreteSlice?ConcreteSlice:max[4]; z<=(ConcreteSlice?ConcreteSlice:max[5]); z++) {
+		fprintf(stderr,"Counting sticks in slice %d (<=%d)\n",z,ConcreteSlice?ConcreteSlice:max[5]);
 		for(y=max[2]; y<=max[3]; y++) {
 
 			// Allocate stick
@@ -106,7 +113,7 @@ int main () {
 		}
 	}	
 
-	printf("Total Count %ld\n",totalCount);
+	printf("%ld\n",totalCount);
 
 	return 0;
 }
