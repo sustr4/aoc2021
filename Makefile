@@ -1,4 +1,4 @@
-all: day11 day14 day15 day16 day17 day19 day20 day21 day22 day23
+all: day11 day14 day15 day16 day17 day19 day20 day21 day22 day23 day25
 
 day11: day11.c
 	cc day11.c -o day11
@@ -32,3 +32,5 @@ day23: day23.c
 day22: day22.c
 	cc day22.c -ggdb -o3 -o day22
 
+day25: day25.c
+	cc day25.c -ggdb -o3 -o day25
