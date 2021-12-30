@@ -13,10 +13,10 @@ day16: day16.c
 	cc day16.c -ggdb -lm -o day16
 
 day17: day17.c
-	cc day17.c -o3 -o day17
+	cc day17.c -O3 -o day17
 
 day19-gen: day19-gen.c
-	cc day19-gen.c -ggdb -lm -o3 -o day19-gen
+	cc day19-gen.c -ggdb -lm -O3 -o day19-gen
 
 day19: day19-gen
 
@@ -24,13 +24,13 @@ day20: day20.c
 	cc day20.c -ggdb -o day20
 
 day21: day21.c
-	cc day21.c -ggdb -o3 -o day21
+	cc day21.c -ggdb -O3 -o day21
 
 day23: day23.c
-	cc day23.c -ggdb -o3 -o day23
+	cc day23.c -ggdb -O3 -o day23
 
 day22: day22.c
-	cc day22.c -ggdb -o3 -o day22
+	cc day22.c -O3 -o day22
 
 day25: day25.c
-	cc day25.c -ggdb -o3 -o day25
+	cc day25.c -ggdb -O3 -o day25
