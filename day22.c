@@ -13,7 +13,7 @@ int main (int argc, char *argv[]) {
 	char *line = NULL;
 	char status[450];
 	int rulecount=0;
-	int max[6];
+	int max[6]={0,0,0,0,0,0};
 	ssize_t shift;
 	int i;
 	int x,y,z,xsize,ysize;
@@ -74,6 +74,8 @@ int main (int argc, char *argv[]) {
 	if (line)
         free(line);
 
+//	for(z=-97823; z<=-97784; z++) {
+//	for(z=-97823; z<=97897; z++) {
 	for(z=ConcreteSlice?ConcreteSlice:max[4]; z<=(ConcreteSlice?ConcreteSlice:max[5]); z++) {
 		fprintf(stderr,"Counting sticks in slice %d (<=%d)\n",z,ConcreteSlice?ConcreteSlice:max[5]);
 		for(y=max[2]; y<=max[3]; y++) {
@@ -90,14 +92,7 @@ int main (int argc, char *argv[]) {
 					
 					for(x=bounds[i][0]; x<=bounds[i][1]; x++)
 						stick[x-max[0]]=status[i];
-
 		
-				if((z==10)&&(y==10)){	
-/*					for(x=0;x<xsize;x++) {
-						printf("%s",stick[x]?"X":".");
-					}
-					printf("\n");/**/
-				}
 			}
 
 			//Count lights
