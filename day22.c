@@ -1,8 +1,11 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-void readInput() {
-
+int comp(const void *a, const void *b)
+{
+  const int *da = (const int *) a;
+  const int *db = (const int *) b;
+  return (*da > *db) - (*da < *db);
 }
 
 int main (int argc, char *argv[]) {
@@ -15,16 +18,11 @@ int main (int argc, char *argv[]) {
 	int rulecount=0;
 	int max[6]={0,0,0,0,0,0};
 	ssize_t shift;
-	int i;
+	int i,j;
 	int x,y,z,xsize,ysize;
 	char *stick;
 	long totalCount=0;
-	int ConcreteSlice=0;
-
-	if (argc>1) {
-		ConcreteSlice=atoi(argv[1]);
-		fprintf(stderr,"Computing only slice %d ",ConcreteSlice);
-	}
+	int *zees;
 
 	input = fopen("day22-input", "r");
 	if (input == NULL) exit(EXIT_FAILURE);
@@ -47,23 +45,15 @@ int main (int argc, char *argv[]) {
 			&bounds[rulecount][4],
 			&bounds[rulecount][5]);
 
-/*		fprintf(stderr,"[%d,%d],[%d,%d],[%d,%d]\n",
-			bounds[rulecount][0],
-			bounds[rulecount][1],
-			bounds[rulecount][2],
-			bounds[rulecount][3],
-			bounds[rulecount][4],
-			bounds[rulecount][5]);/**/
-
 		for(i=0; i<6; i+=2) {
 			if(bounds[rulecount][i]<max[i]) max[i]=bounds[rulecount][i];
 			if(bounds[rulecount][i+1]>max[i+1]) max[i+1]=bounds[rulecount][i+1];
 		}		
 		rulecount++;
 
+
 	}
 
-	if (ConcreteSlice) fprintf(stderr,"from between %d and %d.\n", max[4], max[5]);
 	fprintf(stderr,"Extremes: [%d,%d],[%d,%d],[%d,%d]\n",
 		max[0], max[1], max[2], max[3], max[4], max[5]);
 
@@ -71,13 +61,24 @@ int main (int argc, char *argv[]) {
 	ysize=max[3]-max[2]+1;
 
 	fclose(input);
-	if (line)
-        free(line);
+	if (line) free(line);
 
-//	for(z=-97823; z<=-97784; z++) {
-//	for(z=-97823; z<=97897; z++) {
-	for(z=ConcreteSlice?ConcreteSlice:max[4]; z<=(ConcreteSlice?ConcreteSlice:max[5]); z++) {
-		fprintf(stderr,"Counting sticks in slice %d (<=%d)\n",z,ConcreteSlice?ConcreteSlice:max[5]);
+	fprintf(stderr,"%d significant slices: ", rulecount*3);
+	zees=malloc(rulecount*3*sizeof(int));
+	for(j=0;j<rulecount;j++) {
+		zees[j*3]=bounds[j][4];
+		zees[j*3+1]=bounds[j][5];
+		zees[j*3+2]=bounds[j][5]+1;
+	}
+
+	qsort(zees,rulecount*3,sizeof(int),comp);
+
+	for(j=0;j<(rulecount*3)-1;j++) {
+		if(zees[j]==zees[j+1]) {
+			fprintf(stderr,"Layer %d mentioned twice. Skipping first occurrence\n",zees[j]);
+			continue; }
+		z=zees[j];
+		fprintf(stderr,"Counting sticks in slice %d (<=%d)\n",z,max[5]);
 		for(y=max[2]; y<=max[3]; y++) {
 
 			// Allocate stick
@@ -101,7 +102,7 @@ int main (int argc, char *argv[]) {
 				if(stick[x]) stickCount++;
 
 	//		printf("%d on in this stick\n", stickCount);
-			totalCount+=(long)stickCount;
+			totalCount+=(long)stickCount*(zees[j+1]-zees[j]);
 
 			//free stick
 			free(stick);
